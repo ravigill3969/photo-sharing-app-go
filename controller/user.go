@@ -6,23 +6,15 @@ import (
 	"net/http"
 
 	"github.com/ravigill3969/backend/database"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/ravigill3969/backend/utils"
 )
+
+var secret_key = []byte("golang")
 
 type UserRegister struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +48,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := HashPassword(user.Password)
+	hashedPassword, err := utils.HashPassword(user.Password)
 
 	if err != nil {
 		http.Error(w, "Unable to hash password", http.StatusInternalServerError)
